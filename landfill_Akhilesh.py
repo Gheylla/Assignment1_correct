@@ -51,7 +51,8 @@ def fred():             #reduction factor reducing evapotranspiration under dry 
         fred = 0
     elif S_Evmin <= Scl <= S_Evmax:
         fred = (Scl - S_Evmin) / (S_Evmax - S_Evmin)
-    else fred = 1
+    else: 
+        fred = 1
 
 #Leaching rates
 Lcl = a * (((Scl - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
