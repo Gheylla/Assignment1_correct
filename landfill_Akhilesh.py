@@ -2,10 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 import pandas as pd
-
+#fdskjsfhskhf
 #Import the required files
 pandas.read_csv(WieringermeerData_LeachateProduction.csv)
 pandas.read_csv(WieringermeerData_Meteo.csv)
+
+Qdr = meas_data.iloc[:, 0]                   # leachate output in [m^3/day]
+Jrf = meteo_data.iloc[-(len(Qdr) + 1) : -1, 1]      # Precipitation [m/day]
+pE = meteo_data.iloc[-(len(Qdr) +1): -1, 2]       # Evaporation  [m/day]
 
 #Homemade version of matlab tic and toc functions
 def tic():
