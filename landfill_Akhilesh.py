@@ -27,7 +27,8 @@ def dydt(t, Y):
     return np.array([J(t) - Lcl(t) - E(t), 
                      1 - B(t) * Lcl(t) - E(t)])
 """ Rate of change of storage in the drainage layer Sdr. """
-B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
+def dSdrdt(t, Y): 
+    B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
 
 
 # Definition of parameters
