@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
+import pandas as pd
 
+#Import the required files
+pandas.read_csv(WieringermeerData_LeachateProduction.csv)
+pandas.read_csv(WieringermeerData_Meteo.csv)
 
+#Homemade version of matlab tic and toc functions
 def tic():
-    #Homemade version of matlab tic and toc functions
     import time
     global startTime_for_tictoc
     startTime_for_tictoc = time.time()
