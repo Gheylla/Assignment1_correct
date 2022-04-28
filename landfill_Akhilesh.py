@@ -17,10 +17,13 @@ def toc():
 
 # Definition of Rate Equations
 def dydt(t, Y):
-    """ Rate of change of storage in cover layer Scl and 
-    storage in the waste layer Swb. """
+    """ Rate of change for storage in cover layer Scl and 
+    for storage in the waste layer Swb. """
     return np.array([J(t) - Lcl(t) - E(t), 
                      1 - B(t) * Lcl(t) - E(t)])
+""" Rate of change of storage in the drainage layer Sdr. """
+B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
+
 
 # Definition of parameters
 S_Evmax = 1
@@ -38,14 +41,16 @@ slope_width = 38                #[m]
 waste_body_height = 12          #[m]
 cover_layer_height = 1.5        #[m]
 waste = 281083000               #wet weight [kg]
+fcrop = 1                          #Crop factor
+Bo = 1
 
 
-def fscl():
+def fred():             #reduction factor reducing evapotranspiration under dry soil conditions
     if Scl < S_Evmin:
-        fscl = 0
+        fred = 0
     elif S_Evmin <= Scl <= S_Evmax:
-        fscl = (Scl - S_Evmin) / (S_Evmax - S_Evmin)
-    else fscl = 1
+        fred = (Scl - S_Evmin) / (S_Evmax - S_Evmin)
+    else fred = 1
 
 #Leaching rates
 Lcl = a * (((Scl - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
@@ -53,6 +58,9 @@ Lwb = a * (((Swb - Swb_min) / (Swb_max - Swb_min)) ^ bwb)
 
 # Evaporation model
 E(t) = pEv(t) * fcrop * fscl
+
+# B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
+B(t) = Bo * ((Scl - Scl_min) / (Scl_max - Scl_min))
 
 # Total storage in a layer can never exceed the volume of the pore space
 
