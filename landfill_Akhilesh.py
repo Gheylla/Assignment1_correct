@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 
+
 def tic():
     #Homemade version of matlab tic and toc functions
     import time
