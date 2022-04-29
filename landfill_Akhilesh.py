@@ -31,37 +31,6 @@ def toc():
     else:
         print ("Toc: start time not set")
 
-# Definition of Rate Equations
-def dydt(t, Y):
-    
-    #Leaching rates
-    Lcl = a * (((Y[0,:] - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
-    Lwb = a * (((Y[1,:] - Swb_min) / (Swb_max - Swb_min)) ^ bwb)
-    
-    # Evaporation model
-    E(t) = pEv(t) * fcrop * fscl
-    
-    # Total storage in a layer can never exceed the volume of the pore space
-    if Y[0] < Scl_min:
-        Y[0] = Scl_min
-    elif Y[0] > Scl_max:
-            Y[0] = Scl_max   
-    if Y[1] < Swb_min:
-            Y[1] = Swb_min
-    elif Y[1] > Swb_max:
-            Y[1] = Swb_max 
-    """ Rate of change for storage in cover layer Scl and 
-    for storage in the waste layer Swb. """
-    
-    dydt = np.zeros(2)
-    dydt[0, 1] = np.array([J(t) - Lcl(t) - E(t), 
-                     1 - B(t) * Lcl(t) - E(t)])
-    return 
-""" Rate of change of storage in the drainage layer Sdr. """
-def dSdrdt(t, Y): 
-    B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
-
-
 # Definition of parameters
 S_Evmax = 1
 S_Evmin = 0.25
@@ -81,28 +50,49 @@ waste = 281083000               #wet weight [kg]
 fcrop = 1                          #Crop factor
 Bo = 1
 
-
-def fred():             #reduction factor reducing evapotranspiration under dry soil conditions
-    if Scl < S_Evmin:
+# Definition of Rate Equations
+def dydt(t, Y):
+    
+    #Leaching rates
+    Lcl = a * (((Y[0,:] - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
+    Lwb = a * (((Y[1,:] - Swb_min) / (Swb_max - Swb_min)) ^ bwb)
+    
+    # Evaporation model
+    E(t) = evaporation[int(t)] * fcrop * fred
+    
+    def fred():             #reduction factor reducing evapotranspiration under dry soil conditions
+    if Y[0] < S_Evmin:
         fred = 0
-    elif S_Evmin <= Scl <= S_Evmax:
-        fred = (Scl - S_Evmin) / (S_Evmax - S_Evmin)
+    elif S_Evmin <= Y[0] <= S_Evmax:
+        fred = (Y[0] - S_Evmin) / (S_Evmax - S_Evmin)
     else: 
         fred = 1
-
-
-
-
-# B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
-B(t) = Bo * ((Scl - Scl_min) / (Scl_max - Scl_min))
-
-
+    
+    # Total storage in a layer can never exceed the volume of the pore space
+    if Y[0] < Scl_min:
+        Y[0] = Scl_min
+    elif Y[0] > Scl_max:
+            Y[0] = Scl_max   
+    if Y[1] < Swb_min:
+            Y[1] = Swb_min
+    elif Y[1] > Swb_max:
+            Y[1] = Swb_max 
+    """ Rate of change for storage in cover layer Scl and 
+    for storage in the waste layer Swb. """
+    
+    dydt = np.zeros(2)
+    dydt[0, 1] = np.array([J(t) - Lcl(t) - E(t), 
+                     (1 - B(t)) * Lcl(t) - Lwb])
+    return 
+""" Rate of change of storage in the drainage layer Sdr. """
+def dSdrdt(t, Y): 
+    B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
 
 # Initial case
 Y0 = np.array([0, 0])
 
 # Definition of output times
-tOut = np.linspace(0, 100, 200)              # time
+tOut = np.linspace(0, len(evap)-1, len(evap))              # time
 nOut = np.shape(tOut)[0]
     
 tic()
@@ -115,6 +105,10 @@ rODE = YODE.y[0,:]
 fODE = YODE.y[1,:]
 
 toc()
+
+# B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
+B(t) = Bo * ((Scl - Scl_min) / (Scl_max - Scl_min))
+
 
 # Plot results with matplotlib
 plt.figure()
