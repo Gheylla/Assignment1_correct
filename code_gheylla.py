@@ -8,15 +8,17 @@ Created on Tue Apr 26 20:37:08 2022
 import numpy as np 
 import matplotlib.pyplot as plt 
 import scipy as sp
-import MyTicToc as mt
+# MyTicToc as mt
 
 import pandas as pd
 
-wieringermeer_leachate = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\Assignment1_correct\WieringermeerData_LeachateProduction.xlsx')
-wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\Assignment1_correct\WieringermeerData_Meteo (1).xlsx')
+wieringermeer_leachate = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_LeachateProduction.xlsx')
+wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_Meteo.xlsx')
+
+exclude = wieringermeer_meteo[wieringermeer_meteo['Date'].dt.year != year]
 
 
-plt.plot(wieringermeer_leachate.Leachate)
+plt.plot(wieringermeer_leachate.0)
 plt.ylabel("Leachate production in m3/day")
 plt.title("Leachate Production")
 plt.grid()
