@@ -54,10 +54,7 @@ f_crop = 1                          #Crop factor
 Bo = 1
 L_wd = 2
 
-
-
 #differential functions 
-
 def dYdt(t, Y):
     """ Return the growth rate of fox and rabbit populations. """
     return np.array([ Jrf - L_cl - E ,
@@ -79,23 +76,13 @@ def f_red():
     elif S_Evmin <= S_cl <= S_Evmax:
         return f_red == (S_cl - S_Evmin) / (S_Evmax - S_Evmin)
     else:
-       return f_red == 1
+        return f_red == 1
    
 E = pEV * f_crop * f_red
 
 
 # beta term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
 beta = beta_0 * ((S_cl - Scl_min) / (Scl_max - Scl_min))
-
-
-
-
-
-
-
-
-
-
 
 
 def main():
@@ -114,7 +101,19 @@ def main():
     rODE = YODE.y[0,:]
     fODE = YODE.y[1,:]
 
-    '''EULER'''
+
+
+
+
+
+
+
+
+
+
+
+
+#    '''EULER'''
     # Initialize output vector
     YEuler = np.zeros([nOut, 2], dtype=float)
 
