@@ -4,13 +4,19 @@ import scipy as sp
 import pandas as pd
 
 #Import the required files
-leacheate = pd.read_csv(WieringermeerData_LeachateProduction.csv)
-meteo = pd.read_csv(WieringermeerData_Meteo.csv)
+leacheate = pd.read_excel('WieringermeerData_LeachateProduction.xlsx', index_col=0)
+meteo = pd.read_excel('WieringermeerData_Meteo.xlsx', index_col=0)
 rainfall = meteo.loc[meteo.index >= "2012-06-14"]
 
-table1 = pd.DataFrame(data={'Rain':rainfall.rain_station,
+table = pd.DataFrame(data={'Rain':rainfall.rain_station,
                             'pEV':rainfall.pEV, 'leachate': leachate.leach}, 
                       index = rainfall.index )
+print(table1)
+table['leacheate'] = table['leachate']/base_area
+
+rain = np.asarray(table.rain)
+evaporation = np.asarray(table.pEV)
+Qdr = np.asarray(table.leachate)
 
 #Homemade version of matlab tic and toc functions
 def tic():
@@ -27,10 +33,30 @@ def toc():
 
 # Definition of Rate Equations
 def dydt(t, Y):
+    
+    #Leaching rates
+    Lcl = a * (((Y[0,:] - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
+    Lwb = a * (((Y[1,:] - Swb_min) / (Swb_max - Swb_min)) ^ bwb)
+    
+    # Evaporation model
+    E(t) = pEv(t) * fcrop * fscl
+    
+    # Total storage in a layer can never exceed the volume of the pore space
+    if Y[0] < Scl_min:
+        Y[0] = Scl_min
+    elif Y[0] > Scl_max:
+            Y[0] = Scl_max   
+    if Y[1] < Swb_min:
+            Y[1] = Swb_min
+    elif Y[1] > Swb_max:
+            Y[1] = Swb_max 
     """ Rate of change for storage in cover layer Scl and 
     for storage in the waste layer Swb. """
-    return np.array([J(t) - Lcl(t) - E(t), 
+    
+    dydt = np.zeros(2)
+    dydt[0, 1] = np.array([J(t) - Lcl(t) - E(t), 
                      1 - B(t) * Lcl(t) - E(t)])
+    return 
 """ Rate of change of storage in the drainage layer Sdr. """
 def dSdrdt(t, Y): 
     B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
@@ -64,17 +90,12 @@ def fred():             #reduction factor reducing evapotranspiration under dry 
     else: 
         fred = 1
 
-#Leaching rates
-Lcl = a * (((Scl - Scl_min) / (Scl_max - Scl_min)) ^ bcl)
-Lwb = a * (((Swb - Swb_min) / (Swb_max - Swb_min)) ^ bwb)
 
-# Evaporation model
-E(t) = pEv(t) * fcrop * fscl
+
 
 # B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
 B(t) = Bo * ((Scl - Scl_min) / (Scl_max - Scl_min))
 
-# Total storage in a layer can never exceed the volume of the pore space
 
 
 # Initial case
@@ -118,3 +139,4 @@ plt.ylabel('Rabbits')
 plt.title('Evolution of fox and rabbit populations')
     # f2.savefig('rabbits_and_foxes_2.png')
 plt.show()
+
