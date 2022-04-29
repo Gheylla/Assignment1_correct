@@ -2,7 +2,7 @@
 """
 Created on Tue Apr 26 20:37:08 2022
 
-@author: User
+@author: Gheylla
 """
 
 import numpy as np 
@@ -12,20 +12,31 @@ import scipy as sp
 
 import pandas as pd
 
+#import excel data
 wieringermeer_leachate = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_LeachateProduction.xlsx')
 wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_Meteo.xlsx')
 
-exclude = wieringermeer_meteo[wieringermeer_meteo['Date'].dt.year != year]
+#exclude = wieringermeer_meteo[wieringermeer_meteo['Date'].dt.year != year]
 
 
-plt.plot(wieringermeer_leachate.0)
+plt.plot(wieringermeer_leachate[0])
 plt.ylabel("Leachate production in m3/day")
 plt.title("Leachate Production")
 plt.grid()
 
-beta = 1
-J = 1
+print(wieringermeer_meteo.columns)
 
+
+#define all the variables from the excel files
+#Q_dr = wieringermeer_meteo[1]
+Jrf = wieringermeer_meteo.loc[:,'rain_station']
+pEV = wieringermeer_meteo.loc[:, 'pEV']
+temp = wieringermeer_meteo.loc[:, 'temp']
+
+
+#define the constants 
+
+beta = 1
 L_cl =[10,10]
 L_wd = [10, 10]
 E = 10
