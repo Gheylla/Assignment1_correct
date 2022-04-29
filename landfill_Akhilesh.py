@@ -16,7 +16,7 @@ table['leacheate'] = table['leachate']/base_area
 
 rain = np.asarray(table.rain)
 evaporation = np.asarray(table.pEV)
-Qdr = np.asarray(table.leachate)
+Qdr_observed = np.asarray(table.leachate)
 
 #Homemade version of matlab tic and toc functions
 def tic():
@@ -60,6 +60,10 @@ def dydt(t, Y):
     # Evaporation model
     E(t) = evaporation[int(t)] * fcrop * fred
     
+    # B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
+    B(t) = Bo * ((Y[0,:] - Scl_min) / (Scl_max - Scl_min))
+
+    
     def fred():             #reduction factor reducing evapotranspiration under dry soil conditions
     if Y[0] < S_Evmin:
         fred = 0
@@ -81,18 +85,16 @@ def dydt(t, Y):
     for storage in the waste layer Swb. """
     
     dydt = np.zeros(2)
-    dydt[0, 1] = np.array([J(t) - Lcl(t) - E(t), 
+    dydt[0, 1] = np.array([rain[int(t)] - Lcl(t) - E(t), 
                      (1 - B(t)) * Lcl(t) - Lwb])
-    return 
-""" Rate of change of storage in the drainage layer Sdr. """
-def dSdrdt(t, Y): 
-    B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
+    return dydt
+
 
 # Initial case
 Y0 = np.array([0, 0])
 
 # Definition of output times
-tOut = np.linspace(0, len(evap)-1, len(evap))              # time
+tOut = np.linspace(0, len(evaporation)-1, len(evaporation))              # time
 nOut = np.shape(tOut)[0]
     
 tic()
@@ -100,15 +102,15 @@ tic()
 t_span = [tOut[0], tOut[-1]]
 import scipy.integrate as spint
 YODE = spint.solve_ivp(dYdt, t_span, Y0, t_eval=tOut, method='RK45', vectorized=True, rtol=1e-5 )
-    # infodict['message']                     # >>> 'Integration successful.'
-rODE = YODE.y[0,:]
-fODE = YODE.y[1,:]
+
+Qdr = B(t) * Lcl + Lwb
 
 toc()
 
-# B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
-B(t) = Bo * ((Scl - Scl_min) / (Scl_max - Scl_min))
 
+""" Rate of change of storage in the drainage layer Sdr. """
+def dSdrdt(t, Y): 
+    B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
 
 # Plot results with matplotlib
 plt.figure()
