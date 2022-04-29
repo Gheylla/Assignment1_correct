@@ -14,8 +14,8 @@ import pandas as pd
 
 #import excel data
 wieringermeer_leachate = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_LeachateProduction.xlsx')
-wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_Meteo.xlsx')
-
+wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_Meteo.xlsx', skiprows = range(1,3453))
+wieringermeer_meteo = wieringermeer_meteo.drop(wieringermeer_meteo.index[-1])
 #exclude = wieringermeer_meteo[wieringermeer_meteo['Date'].dt.year != year]
 
 
@@ -33,6 +33,8 @@ Jrf = wieringermeer_meteo.loc[:,'rain_station']
 pEV = wieringermeer_meteo.loc[:, 'pEV']
 temp = wieringermeer_meteo.loc[:, 'temp']
 
+#remove the years from 2003 -2011 in order to make the number
+#of values the same for both excel sheets. 
 
 #define the constants 
 
@@ -45,8 +47,11 @@ E = 10
 
 def dYdt(t, Y):
     """ Return the growth rate of fox and rabbit populations. """
-    return np.array([ J - L_cl[0] - E ,
-                     (1 - beta) * L_cl[0] - L_wd[1]])
+    return np.array([ J(t) - L_cl - E ,
+                     (1 - beta) * L_cl - L_wd])
+                     
+#define the other functions 
+
 
 
 def main():
