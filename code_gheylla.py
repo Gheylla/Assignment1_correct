@@ -13,10 +13,12 @@ import scipy as sp
 import pandas as pd
 
 #import excel data
+#remove the years from 2003 -2011 in order to make the number
+#of values the same for both excel sheets. 
+
 wieringermeer_leachate = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_LeachateProduction.xlsx')
 wieringermeer_meteo = pd.read_excel(r'C:\Users\User\Desktop\TU DELFT\Master 2021-2022\Q4\Modelling for Coupled Processes\WieringermeerData_Meteo.xlsx', skiprows = range(1,3453))
 wieringermeer_meteo = wieringermeer_meteo.drop(wieringermeer_meteo.index[-1])
-#exclude = wieringermeer_meteo[wieringermeer_meteo['Date'].dt.year != year]
 
 
 plt.plot(wieringermeer_leachate[0])
@@ -24,33 +26,75 @@ plt.ylabel("Leachate production in m3/day")
 plt.title("Leachate Production")
 plt.grid()
 
-print(wieringermeer_meteo.columns)
-
 
 #define all the variables from the excel files
-#Q_dr = wieringermeer_meteo[1]
+Q_dr = wieringermeer_leachate.iloc[:, 1]
 Jrf = wieringermeer_meteo.loc[:,'rain_station']
 pEV = wieringermeer_meteo.loc[:, 'pEV']
 temp = wieringermeer_meteo.loc[:, 'temp']
 
-#remove the years from 2003 -2011 in order to make the number
-#of values the same for both excel sheets. 
-
 #define the constants 
+# Definition of parameters
+S_Evmax = 1
+S_Evmin = 0.25
+Scl_min = 0.1
+Scl_max = 1
+Swb_max = 1 
+Swb_min = 0.1
+a = 0.1                         #saturated hydraulic conductivity [m/day]
+b_cl = 0.01                      # empirical parameter
+b_wb = 0.01
+base_area = 28355               #[m2]
+top_area = 9100                 #[m2]
+slope_width = 38                #[m]
+waste_body_height = 12          #[m]
+cover_layer_height = 1.5        #[m]
+waste = 281083000               #wet weight [kg]
+f_crop = 1                          #Crop factor
+Bo = 1
+L_wd = 2
 
-beta = 1
-L_cl =[10,10]
-L_wd = [10, 10]
-E = 10
+
 
 #differential functions 
 
 def dYdt(t, Y):
     """ Return the growth rate of fox and rabbit populations. """
-    return np.array([ J(t) - L_cl - E ,
+    return np.array([ Jrf - L_cl - E ,
                      (1 - beta) * L_cl - L_wd])
-                     
+                    
 #define the other functions 
+#def dSdrdt(t, Y): 
+ #   return beta * L_cl + L_wd - Q_dr = 0 
+
+#Leaching rates
+L_cl = a * (((Scl - Scl_min) / (Scl_max - Scl_min)) ** b_cl)
+L_wb = a * (((Swb - Swb_min) / (Swb_max - Swb_min)) ** b_wb)
+
+
+# Evaporation model
+def f_red():
+    if S_cl < S_Evmin:
+        return f_red == 0 
+    elif S_Evmin <= S_cl <= S_Evmax:
+        return f_red == (S_cl - S_Evmin) / (S_Evmax - S_Evmin)
+    else:
+       return f_red == 1
+   
+E = pEV * f_crop * f_red
+
+
+# beta term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
+beta = beta_0 * ((S_cl - Scl_min) / (Scl_max - Scl_min))
+
+
+
+
+
+
+
+
+
 
 
 
