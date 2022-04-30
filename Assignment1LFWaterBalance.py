@@ -74,7 +74,7 @@ def dYdt(t, Y):
     Lcl_rate = acl * ((Y[0] - Scl_min) / (Scl_max - Scl_min)) ** bcl
     
     # Evaporation model
-    E_rate = pE[a-1] * Cf * fred
+    E_rate = np.array(pE[a-1] * Cf * fred)
     
     # B(t) term that allows a certain fraction of water leaching from the cover layer to directly enter the drainage layer
     beta = beta0 * ((Scl - Scl_min) / (Scl_max - Scl_min))
@@ -102,23 +102,33 @@ SclODE = YODE.y[0 , :]
 SwbODE = YODE.y[1 , :]
 
 # #Ploting the Figures
-# 
-# plt.figure()
-# plt.plot(tOut, RODE, 'r-' , label = 'Rabbits')
-# plt.plot(tOut, FODE, 'b-' , label = 'Foxes')
-# 
-# plt.grid()
-# plt.legend(loc='best')
-# plt.xlabel('time')
-# plt.ylabel('population')
-# plt.title('Evolution of foxes and rabbit population')
-# 
-# plt.figure()
-# plt.plot(FODE, RODE, 'b-', label='ODE')
-# plt.grid()
-# plt.legend(loc='best')
-# plt.xlabel('Foxes')
-# plt.ylabel('Rabbits')
-# plt.title('Evolution of fox and rabbit populations')
-# =============================================================================
+# Plot Cover layer storage and Waste body storage over time
+plt.figure()
+plt.plot(tOut1, SclODE, 'r-', label='Cover layer')
+plt.plot(tOut1, SwbODE  , 'b-', label='Waste body')
+plt.grid()
+plt.legend(loc='best')
+plt.xlabel('Time (day)')
+plt.ylabel('Water storage (m)')
 
+Qdr_simulated = (beta * Lcl_rate + Lwb_rate)*28355
+tOut = np.linspace(0, 2757, 2757)
+nOut = np.shape(tOut)[0]
+Qdr_simulated = np.zeros(2757)
+Qdr_measured = np.zeros(2757)
+pE = np.zeros(2757)
+Qdr_measured[0] =  0.
+# Calculate the storage rate from the measured data
+for i in range (1, nOut-1):
+    Qdr_measured[i] = Qdr_measured[i] - Qdr_measured[i-1]
+print(Qdr_simulated)
+
+plt.figure()
+plt.plot(tOut, Qdr_simulated, 'r-', label='Calculated')
+plt.plot(tOut, Qdr_measured, 'b-', label='Measured')
+plt.grid()
+plt.legend(loc='best')
+plt.xlabel('Time (day)')
+plt.ylabel('Leachate production rate (m^3/day)')
+plt.show()
+# Plot the calculated (simulated) and measured leachate production rate over time
