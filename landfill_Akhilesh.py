@@ -74,9 +74,6 @@ for i in range (1, nOut-1):
 import scipy.integrate as spint
 YODE = spint.solve_ivp(dYdt, t_span, Y0, t_eval=tOut, method='RK45', vectorized=True, rtol=1e-5 )
 
-
-tOut = np.linspace(0, len(evaporation)-1, len(evaporation))
-
 Qdr_cal = beta0 *((YODE.y[0,:] - Scl_min)/(Scl_max - Scl_min))*acl*((YODE.y[0,:] - Scl_min)/(Scl_max - Scl_min)) ** bcl + awb*((YODE.y[1,:] - Swb_min)/(Swb_max - Swb_min)) ** bwb
 Qdr_cal = Qdr_cal * 28355     #base_area = 28355
 SSE = np.sum((Qdr_cal - Qdr_observed)**2)
@@ -86,7 +83,7 @@ plt.figure(figsize=(9,5))
 plt.plot(tOut, Qdr_observed, 'r', markersize=2.5, label='Observations')
 plt.plot(tOut, Qdr_cal, 'o', markersize=2.5, label='Calculated')
 plt.ylabel('Storage (m)')
-plt.title('SSE')
+plt.title('Storage available')
 plt.legend()
 plt.grid();
 
@@ -95,3 +92,4 @@ plt.ylabel('Storage [m]')
 plt.plot(tOut, YODE.y[0,:], label='Cover layer', color ='blue')
 plt.legend()
 plt.grid();
+
