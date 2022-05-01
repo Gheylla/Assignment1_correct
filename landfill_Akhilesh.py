@@ -40,22 +40,22 @@ def dYdt(t, Y):
         
     #Boundaries for values of storage
     if Y[0] < Scl_min:                  
-            Y[0] = Scl_min
+        Y[0] = Scl_min
     elif Y[0] > Scl_max:
-            Y[0] = Scl_max   
+        Y[0] = Scl_max   
     if Y[1] < Swb_min:
             Y[1] = Swb_min
     elif Y[1] > Swb_max:
-            Y[1] = Swb_max 
+        Y[1] = Swb_max 
             
     #reduction factor reducing evapotranspiration under dry soil conditions
 
     if Y[0] < S_Evmin:
-            fred = 0
+        fred = 0
     elif S_Evmin <= Y[0] <= S_Evmax:
-            fred = (Y[0] - S_Evmin) / (S_Evmax - S_Evmin)
+        fred = (Y[0] - S_Evmin) / (S_Evmax - S_Evmin)
     else: 
-            fred = 1
+        fred = 1
 
     dydt = np.zeros(2)
     dydt[0] = (rain[int(t)]) - acl*(Lcl)**bcl - (evaporation[int(t)])*fcrop*fred
@@ -80,15 +80,6 @@ tOut = np.linspace(0, len(evaporation)-1, len(evaporation))
 Qdr_cal = beta0 *((YODE.y[0,:] - Scl_min)/(Scl_max - Scl_min))*acl*((YODE.y[0,:] - Scl_min)/(Scl_max - Scl_min)) ** bcl + awb*((YODE.y[1,:] - Swb_min)/(Swb_max - Swb_min)) ** bwb
 Qdr_cal = Qdr_cal * 28355     #base_area = 28355
 SSE = np.sum((Qdr_cal - Qdr_observed)**2)
-#YODE = spint.solve_ivp(dydt, t_span, Y0, t_eval=tOut, method='RK45', vectorized=True, rtol=1e-5 )
-   # sort this Qdr_cal = B * Lcl + Lwb
-#SSE = np.sum((Qdr_cal - Qdr_observed)**2)
-
-
-
-""" Rate of change of storage in the drainage layer Sdr. """
-#def dSdrdt(t, Y): 
-    #B(t) * Lcl(t) + Lwd(t) - Qdr(t) = 0
 
 
 plt.figure(figsize=(9,5))
@@ -96,5 +87,11 @@ plt.plot(tOut, Qdr_observed, 'r', markersize=2.5, label='Observations')
 plt.plot(tOut, Qdr_cal, 'o', markersize=2.5, label='Calculated')
 plt.ylabel('Storage (m)')
 plt.title('SSE')
+plt.legend()
+plt.grid();
+
+plt.figure(figsize=(9,5))
+plt.ylabel('Storage [m]')
+plt.plot(tOut, YODE.y[0,:], label='Cover layer', color ='blue')
 plt.legend()
 plt.grid();
