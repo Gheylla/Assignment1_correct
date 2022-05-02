@@ -84,7 +84,7 @@ Qdr_obs_cum = np.zeros(len(rain))
 Qdr_cal_cum = np.zeros(len(rain))
 Qdr_cal_cum[0] = Qdr_cal[0]
 Qdr_obs_cum[0] = Qdr_observed[0]
-for i in range (1, nOut-1):
+for i in range (1, 2757):
     Qdr_obs_cum[i] = Qdr_obs_cum[i-1] + Qdr_observed[i]
     Qdr_cal_cum[i] = Qdr_cal_cum[i-1] + Qdr_cal[i]
 
