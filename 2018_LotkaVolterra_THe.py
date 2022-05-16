@@ -39,7 +39,7 @@ def main():
     YODE = sp.integrate.solve_ivp(dYdt, t_span, Y0, t_eval=tOut, 
                                   method='RK45', vectorized=True, 
                                   rtol=1e-5 )
-    # infodict['message']                     # >>> 'Integration successful.'
+    #infodict['message']                     # >>> 'Integration successful.'
     rODE = YODE.y[0,:]
     fODE = YODE.y[1,:]
 
