@@ -106,31 +106,33 @@ SwbODE = YODE.y[1, :]
 # #Ploting the Figures
 # Plot Cover layer storage and Waste body storage over time
 plt.figure()
-plt.plot(tOut, SclODE[:len(Qdr)], 'r-', label='Cover layer')
-plt.plot(tOut, SwbODE[:len(Qdr)]  , 'b-', label='Waste body')
+plt.plot(tOut, SclODE, 'r-', label='Cover layer')
+plt.plot(tOut, SwbODE, 'b-', label='Waste body')
 plt.grid()
 plt.legend(loc='best')
 plt.xlabel('Time (day)')
 plt.ylabel('Water storage (m)')
 
-Qdr_simulated = (beta * Lcl_rate + Lwb_rate)*28355
-tOut = np.linspace(0, 2757, 2757)
-nOut = np.shape(tOut)[0]
-Qdr_simulated = np.zeros(2757)
-Qdr_measured = np.zeros(2757)
-pE = np.zeros(2757)
-Qdr_measured[0] =  0.
-# Calculate the storage rate from the measured data
-for i in range (1, nOut-1):
-    Qdr_measured[i] = Qdr_measured[i] - Qdr_measured[i-1]
-print(Qdr_simulated)
-
-plt.figure()
-plt.plot(tOut, Qdr_simulated, 'r-', label='Calculated')
-plt.plot(tOut, Qdr_measured, 'b-', label='Measured')
-plt.grid()
-plt.legend(loc='best')
-plt.xlabel('Time (day)')
-plt.ylabel('Leachate production rate (m^3/day)')
-plt.show()
-# Plot the calculated (simulated) and measured leachate production rate over time
+# =============================================================================
+# Qdr_simulated = (beta * Lcl_rate + Lwb_rate)*28355
+# tOut = np.linspace(0, 2757, 2757)
+# nOut = np.shape(tOut)[0]
+# Qdr_simulated = np.zeros(2757)
+# Qdr_measured = np.zeros(2757)
+# pE = np.zeros(2757)
+# Qdr_measured[0] =  0.
+# # Calculate the storage rate from the measured data
+# for i in range (1, nOut-1):
+#     Qdr_measured[i] = Qdr_measured[i] - Qdr_measured[i-1]
+# print(Qdr_simulated)
+# 
+# plt.figure()
+# plt.plot(tOut, Qdr_simulated, 'r-', label='Calculated')
+# plt.plot(tOut, Qdr_measured, 'b-', label='Measured')
+# plt.grid()
+# plt.legend(loc='best')
+# plt.xlabel('Time (day)')
+# plt.ylabel('Leachate production rate (m^3/day)')
+# plt.show()
+# # Plot the calculated (simulated) and measured leachate production rate over time
+# =============================================================================
